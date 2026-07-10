@@ -1,4 +1,4 @@
-import { Button, Group, NumberInput, SimpleGrid, Stack, TextInput } from '@mantine/core';
+import { Button, Group, NumberInput, SimpleGrid, Stack, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import type { Vehicle } from '../../types';
@@ -56,6 +56,9 @@ export function VehicleForm({ initial, onSubmit, onCancel }: VehicleFormProps) {
   return (
     <form onSubmit={handleSubmit}>
       <Stack>
+        <Text size="sm" c="dimmed">
+          Un alias te ayuda a identificar el auto rápido (ej. &quot;Mi Corolla&quot;).
+        </Text>
         <TextInput label="Alias" placeholder="Mi Corolla" {...form.getInputProps('alias')} />
         <SimpleGrid cols={{ base: 1, xs: 2 }} spacing="sm">
           <TextInput label="Marca" {...form.getInputProps('brand')} />

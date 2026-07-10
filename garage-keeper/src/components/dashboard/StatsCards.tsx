@@ -6,6 +6,7 @@ import {
   IconTool,
 } from '@tabler/icons-react';
 import { globalCost } from '../../services/selectors';
+import { formatCurrency } from '../../lib/format';
 import { useGarage } from '../../context/GarageContext';
 import { useMaintenanceAlerts } from '../../hooks/useMaintenanceAlerts';
 
@@ -17,44 +18,65 @@ export function StatsCards() {
   const stats = [
     {
       label: 'Gasto total',
-      value: `$${globalCost(state).toLocaleString()}`,
+      hint: 'Suma de todos los servicios',
+      value: formatCurrency(globalCost(state)),
       icon: IconCoin,
-      color: 'blue',
+      color: 'indigo',
     },
     {
       label: 'Vehículos',
-      value: state.vehicles.length,
+      hint: 'Autos en tu garaje',
+      value: String(state.vehicles.length),
       icon: IconCar,
       color: 'teal',
     },
     {
       label: 'Servicios',
-      value: state.maintenances.length,
+      hint: 'Mantenimientos registrados',
+      value: String(state.maintenances.length),
       icon: IconTool,
       color: 'violet',
     },
     {
-      label: 'Alertas activas',
-      value: activeAlerts,
+      label: 'Alertas',
+      hint: 'Servicios por revisar',
+      value: String(activeAlerts),
       icon: IconAlertTriangle,
-      color: 'orange',
+      color: activeAlerts > 0 ? 'orange' : 'green',
     },
   ];
 
   return (
-    <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} mb="xl">
+    <SimpleGrid cols={{ base: 1, xs: 2, lg: 4 }} mb="xl" spacing="md">
       {stats.map((stat) => (
-        <Card key={stat.label} withBorder padding="lg" radius="md">
-          <Group>
-            <ThemeIcon size={40} radius="md" variant="light" color={stat.color}>
+        <Card
+          key={stat.label}
+          padding="lg"
+          style={{
+            transition: 'transform 150ms ease, box-shadow 150ms ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = 'var(--mantine-shadow-md)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'none';
+            e.currentTarget.style.boxShadow = 'var(--mantine-shadow-sm)';
+          }}
+        >
+          <Group wrap="nowrap" align="flex-start">
+            <ThemeIcon size={44} radius="md" variant="light" color={stat.color}>
               <stat.icon size={22} />
             </ThemeIcon>
             <div>
               <Text size="xs" c="dimmed" tt="uppercase" fw={700}>
                 {stat.label}
               </Text>
-              <Text fw={700} size="xl">
+              <Text fw={800} size="xl" lh={1.2}>
                 {stat.value}
+              </Text>
+              <Text size="xs" c="dimmed" mt={4}>
+                {stat.hint}
               </Text>
             </div>
           </Group>

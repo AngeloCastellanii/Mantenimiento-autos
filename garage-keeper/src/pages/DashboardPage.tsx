@@ -1,8 +1,13 @@
-import { Button, Group, Modal, Stack, Text, Title } from '@mantine/core';
+import { Button, Group, Modal, Stack, Text } from '@mantine/core';
+import { IconArrowRight } from '@tabler/icons-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { APP_TAGLINE } from '../constants/brand';
 import { PageHeader } from '../components/layout/PageHeader';
+import { SectionBlock } from '../components/layout/SectionBlock';
 import { StatsCards } from '../components/dashboard/StatsCards';
 import { UpcomingAlerts } from '../components/dashboard/UpcomingAlerts';
+import { WelcomeBanner } from '../components/dashboard/WelcomeBanner';
 import { VehicleGrid } from '../components/vehicles/VehicleGrid';
 import { VehicleForm, type VehicleFormValues } from '../components/vehicles/VehicleForm';
 import { useGarage } from '../context/GarageContext';
@@ -11,6 +16,7 @@ import { useResponsiveModalProps } from '../hooks/useResponsiveModal';
 import type { Vehicle } from '../types';
 
 export function DashboardPage() {
+  const navigate = useNavigate();
   const { state, addVehicle } = useGarage();
   const [opened, setOpened] = useState(false);
   const isMobile = useIsMobile();
@@ -33,26 +39,64 @@ export function DashboardPage() {
 
   return (
     <>
-      <PageHeader title="Inicio" crumbs={[{ label: 'Inicio' }]} />
+      <PageHeader
+        title="Inicio"
+        subtitle={APP_TAGLINE}
+        crumbs={[{ label: 'Inicio' }]}
+      />
+
+      <WelcomeBanner onAddVehicle={() => setOpened(true)} />
       <StatsCards />
-      <Group justify="space-between" mb="md">
-        <Title order={3}>Próximos mantenimientos</Title>
-      </Group>
-      <UpcomingAlerts limit={3} />
-      <Group justify="space-between" align="center" mb="md" wrap="wrap" gap="sm">
-        <Title order={3}>Mis vehículos</Title>
-        <Button onClick={() => setOpened(true)} fullWidth={isMobile} maw={isMobile ? undefined : 200}>
-          Agregar vehículo
-        </Button>
-      </Group>
-      {state.vehicles.length === 0 ? (
-        <Stack align="center" py="lg">
-          <Text c="dimmed">No hay vehículos registrados</Text>
-          <Button onClick={() => setOpened(true)}>Agregar el primero</Button>
-        </Stack>
-      ) : (
-        <VehicleGrid vehicles={state.vehicles.slice(0, 3)} />
-      )}
+
+      <SectionBlock
+        title="Próximos mantenimientos"
+        description="Servicios que vencen pronto o ya están atrasados."
+        action={
+          <Button
+            variant="light"
+            size="compact-sm"
+            rightSection={<IconArrowRight size={14} />}
+            onClick={() => navigate('/proximos')}
+          >
+            Ver todos
+          </Button>
+        }
+      >
+        <UpcomingAlerts limit={3} />
+      </SectionBlock>
+
+      <SectionBlock
+        title="Mis vehículos"
+        description="Selecciona un auto para ver su historial y registrar servicios."
+        action={
+          <Button onClick={() => setOpened(true)} fullWidth={isMobile} maw={isMobile ? undefined : 200}>
+            Agregar vehículo
+          </Button>
+        }
+        mb={0}
+      >
+        {state.vehicles.length === 0 ? (
+          <Stack align="center" py="lg">
+            <Text c="dimmed" ta="center">
+              Aún no tienes vehículos. Agrega el primero para empezar a llevar el
+              control.
+            </Text>
+            <Button onClick={() => setOpened(true)}>Agregar el primero</Button>
+          </Stack>
+        ) : (
+          <>
+            <VehicleGrid vehicles={state.vehicles.slice(0, 3)} />
+            {state.vehicles.length > 3 && (
+              <Group justify="center" mt="md">
+                <Button variant="subtle" onClick={() => navigate('/vehiculos')}>
+                  Ver los {state.vehicles.length} vehículos
+                </Button>
+              </Group>
+            )}
+          </>
+        )}
+      </SectionBlock>
+
       <Modal
         opened={opened}
         onClose={() => setOpened(false)}

@@ -1,4 +1,4 @@
-import { Breadcrumbs, Anchor, Group, Title } from '@mantine/core';
+import { Breadcrumbs, Anchor, Group, Text, Title } from '@mantine/core';
 import { IconChevronRight } from '@tabler/icons-react';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
@@ -10,11 +10,12 @@ interface Crumb {
 
 interface PageHeaderProps {
   title: string;
+  subtitle?: string;
   crumbs?: Crumb[];
   action?: ReactNode;
 }
 
-export function PageHeader({ title, crumbs, action }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, crumbs, action }: PageHeaderProps) {
   return (
     <>
       {crumbs && crumbs.length > 0 && (
@@ -37,9 +38,16 @@ export function PageHeader({ title, crumbs, action }: PageHeaderProps) {
         </Breadcrumbs>
       )}
       <Group justify="space-between" align="flex-start" wrap="wrap" gap="sm" mb="lg">
-        <Title order={2} style={{ flex: 1, minWidth: 0, wordBreak: 'break-word' }}>
-          {title}
-        </Title>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <Title order={2} style={{ wordBreak: 'break-word' }}>
+            {title}
+          </Title>
+          {subtitle && (
+            <Text c="dimmed" size="sm" mt={6}>
+              {subtitle}
+            </Text>
+          )}
+        </div>
         {action}
       </Group>
     </>

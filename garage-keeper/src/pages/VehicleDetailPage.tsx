@@ -203,6 +203,7 @@ export function VehicleDetailPage() {
     <>
       <PageHeader
         title={`${vehicle.brand} ${vehicle.model} ${vehicle.year}`}
+        subtitle={`${vehicle.alias} · Historial, alertas y datos del vehículo`}
         crumbs={[
           { label: 'Inicio', to: '/' },
           { label: 'Vehículos', to: '/vehiculos' },

@@ -36,6 +36,7 @@ export function UpcomingPage() {
     <>
       <PageHeader
         title="Próximos mantenimientos"
+        subtitle="Revisa qué servicios están vencidos o se acercan por km o tiempo."
         crumbs={[{ label: 'Inicio', to: '/' }, { label: 'Próximos' }]}
       />
       <Stack gap="md">

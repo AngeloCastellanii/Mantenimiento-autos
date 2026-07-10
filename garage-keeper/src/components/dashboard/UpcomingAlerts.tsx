@@ -72,7 +72,12 @@ export function UpcomingAlerts({
             key={`${alert.vehicleId}-${alert.type}-${i}`}
             onClick={() => navigate(`/vehiculos/${alert.vehicleId}`)}
           >
-            <Card withBorder padding="sm" radius="md">
+            <Card
+              withBorder
+              padding="sm"
+              radius="md"
+              style={{ transition: 'transform 150ms ease, box-shadow 150ms ease' }}
+            >
               <Group justify="space-between" wrap="nowrap">
                 <Group wrap="nowrap" gap="sm">
                   <ThemeIcon variant="light" color={color} size="lg" radius="md">

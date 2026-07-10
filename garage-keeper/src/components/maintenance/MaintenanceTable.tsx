@@ -6,17 +6,19 @@ import {
   Card,
   Group,
   Select,
+  SimpleGrid,
   Stack,
   Table,
   Text,
   UnstyledButton,
 } from '@mantine/core';
+import { DatePickerInput } from '@mantine/dates';
 import {
   MAINTENANCE_LABELS,
   MAINTENANCE_OPTIONS,
 } from '../../constants/maintenance';
 import { useIsMobile } from '../../hooks/useIsMobile';
-import { formatCurrency, formatDate, formatMileage } from '../../lib/format';
+import { formatCurrency, formatDate, formatMileage, dayjs } from '../../lib/format';
 import type { Maintenance, MaintenanceType } from '../../types';
 import { EmptyMaintenanceState } from './EmptyMaintenanceState';
 
@@ -76,13 +78,25 @@ export function MaintenanceTable({
 }: MaintenanceTableProps) {
   const isMobile = useIsMobile();
   const [filterType, setFilterType] = useState<string | null>(null);
+  const [fromDate, setFromDate] = useState<Date | null>(null);
+  const [toDate, setToDate] = useState<Date | null>(null);
 
   const filtered = useMemo(() => {
-    const rows = filterType
+    let rows = filterType
       ? maintenances.filter((m) => m.type === filterType)
       : maintenances;
+
+    if (fromDate) {
+      const from = dayjs(fromDate).startOf('day');
+      rows = rows.filter((m) => !dayjs(m.date).isBefore(from));
+    }
+    if (toDate) {
+      const to = dayjs(toDate).endOf('day');
+      rows = rows.filter((m) => !dayjs(m.date).isAfter(to));
+    }
+
     return [...rows].sort((a, b) => b.date.localeCompare(a.date));
-  }, [maintenances, filterType]);
+  }, [maintenances, filterType, fromDate, toDate]);
 
   if (maintenances.length === 0) {
     return <EmptyMaintenanceState onAdd={onAdd} />;
@@ -92,17 +106,39 @@ export function MaintenanceTable({
     <>
       <Stack gap="sm" mb="sm">
         <Text size="sm" c="dimmed">
-          {filtered.length} de {maintenances.length} servicios
+          {filtered.length} de {maintenances.length} servicios · Toca una fila para ver el detalle
         </Text>
         <Select
+          label="Tipo de servicio"
           placeholder="Todos los tipos"
           clearable
-          w={isMobile ? '100%' : 220}
+          w={isMobile ? '100%' : 240}
           data={MAINTENANCE_OPTIONS}
           value={filterType}
           onChange={setFilterType}
           aria-label="Filtrar por tipo de servicio"
         />
+        <SimpleGrid cols={{ base: 1, xs: 2 }} spacing="sm">
+          <DatePickerInput
+            label="Desde"
+            placeholder="Fecha inicial"
+            clearable
+            valueFormat="DD/MM/YYYY"
+            value={fromDate}
+            onChange={(value) =>
+              setFromDate(value ? dayjs(value).toDate() : null)
+            }
+          />
+          <DatePickerInput
+            label="Hasta"
+            placeholder="Fecha final"
+            clearable
+            valueFormat="DD/MM/YYYY"
+            value={toDate}
+            onChange={(value) => setToDate(value ? dayjs(value).toDate() : null)}
+            minDate={fromDate ?? undefined}
+          />
+        </SimpleGrid>
       </Stack>
 
       {filtered.length === 0 ? (

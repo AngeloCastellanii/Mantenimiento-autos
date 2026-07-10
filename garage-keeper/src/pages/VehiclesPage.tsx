@@ -1,4 +1,4 @@
-import { Button, Group, Modal, Text } from '@mantine/core';
+import { Button, Modal, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { PageHeader } from '../components/layout/PageHeader';
 import { VehicleGrid } from '../components/vehicles/VehicleGrid';
@@ -33,15 +33,22 @@ export function VehiclesPage() {
     <>
       <PageHeader
         title="Mis vehículos"
+        subtitle="Toca una tarjeta para abrir el historial de mantenimiento."
         crumbs={[{ label: 'Inicio', to: '/' }, { label: 'Vehículos' }]}
+        action={
+          <Button onClick={() => setOpened(true)} fullWidth={isMobile}>
+            + Agregar vehículo
+          </Button>
+        }
       />
-      <Group justify="flex-end" mb="md">
-        <Button onClick={() => setOpened(true)} fullWidth={isMobile}>
-          + Agregar vehículo
-        </Button>
-      </Group>
       {state.vehicles.length === 0 ? (
-        <Text c="dimmed">No hay vehículos. Agrega el primero.</Text>
+        <Stack align="center" py="xl">
+          <Text c="dimmed" ta="center" maw={360}>
+            Aquí aparecerán tus autos. Registra marca, modelo y kilometraje para
+            comenzar.
+          </Text>
+          <Button onClick={() => setOpened(true)}>Agregar vehículo</Button>
+        </Stack>
       ) : (
         <VehicleGrid vehicles={state.vehicles} />
       )}
