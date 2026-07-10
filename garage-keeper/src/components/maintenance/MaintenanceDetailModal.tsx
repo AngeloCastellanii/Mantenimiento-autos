@@ -11,6 +11,7 @@ import {
   Text,
 } from '@mantine/core';
 import { IconPencil, IconTrash } from '@tabler/icons-react';
+import { useResponsiveModalProps } from '../../hooks/useResponsiveModal';
 import { MAINTENANCE_LABELS } from '../../constants/maintenance';
 import { formatCurrency, formatDate, formatMileage } from '../../lib/format';
 import type { Maintenance } from '../../types';
@@ -42,12 +43,14 @@ export function MaintenanceDetailModal({
   onEdit,
   onDelete,
 }: MaintenanceDetailModalProps) {
+  const modalProps = useResponsiveModalProps();
+
   return (
     <Modal
       opened={opened}
       onClose={onClose}
       title="Detalle del mantenimiento"
-      centered
+      {...modalProps}
     >
       {maintenance && (
         <Stack gap="md">
@@ -61,7 +64,7 @@ export function MaintenanceDetailModal({
             </Badge>
           </Group>
 
-          <SimpleGrid cols={2} spacing="md">
+          <SimpleGrid cols={{ base: 1, xs: 2 }} spacing="md">
             <Field label="Fecha" value={formatDate(maintenance.date)} />
             <Field
               label="Kilometraje"
@@ -82,7 +85,7 @@ export function MaintenanceDetailModal({
 
           <Divider />
 
-          <Group justify="flex-end">
+          <Group justify="flex-end" wrap="wrap">
             <Button
               variant="default"
               leftSection={<IconPencil size={16} />}

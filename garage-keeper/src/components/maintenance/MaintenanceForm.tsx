@@ -6,6 +6,7 @@ import {
   Group,
   NumberInput,
   Select,
+  SimpleGrid,
   Stack,
   Textarea,
   TextInput,
@@ -92,7 +93,7 @@ export function MaintenanceForm({
           key={form.key('type')}
           {...form.getInputProps('type')}
         />
-        <Group grow align="flex-start">
+        <SimpleGrid cols={{ base: 1, xs: 2 }} spacing="sm">
           <DatePickerInput
             label="Fecha del servicio"
             placeholder="Selecciona fecha"
@@ -113,7 +114,7 @@ export function MaintenanceForm({
             key={form.key('mileage')}
             {...form.getInputProps('mileage')}
           />
-        </Group>
+        </SimpleGrid>
         {showMileageWarning && (
           <Alert
             variant="light"
@@ -125,7 +126,7 @@ export function MaintenanceForm({
             Verifica el dato.
           </Alert>
         )}
-        <Group grow align="flex-start">
+        <SimpleGrid cols={{ base: 1, xs: 2 }} spacing="sm">
           <NumberInput
             label="Costo"
             placeholder="45"
@@ -144,7 +145,7 @@ export function MaintenanceForm({
             key={form.key('provider')}
             {...form.getInputProps('provider')}
           />
-        </Group>
+        </SimpleGrid>
         <Textarea
           label="Notas"
           description="Opcional"

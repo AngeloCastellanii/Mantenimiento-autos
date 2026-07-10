@@ -6,11 +6,15 @@ import { UpcomingAlerts } from '../components/dashboard/UpcomingAlerts';
 import { VehicleGrid } from '../components/vehicles/VehicleGrid';
 import { VehicleForm, type VehicleFormValues } from '../components/vehicles/VehicleForm';
 import { useGarage } from '../context/GarageContext';
+import { useIsMobile } from '../hooks/useIsMobile';
+import { useResponsiveModalProps } from '../hooks/useResponsiveModal';
 import type { Vehicle } from '../types';
 
 export function DashboardPage() {
   const { state, addVehicle } = useGarage();
   const [opened, setOpened] = useState(false);
+  const isMobile = useIsMobile();
+  const modalProps = useResponsiveModalProps();
 
   const handleAdd = (values: VehicleFormValues) => {
     const vehicle: Vehicle = {
@@ -35,9 +39,11 @@ export function DashboardPage() {
         <Title order={3}>Próximos mantenimientos</Title>
       </Group>
       <UpcomingAlerts limit={3} />
-      <Group justify="space-between" mt="xl" mb="md">
+      <Group justify="space-between" align="center" mb="md" wrap="wrap" gap="sm">
         <Title order={3}>Mis vehículos</Title>
-        <Button onClick={() => setOpened(true)}>Agregar vehículo</Button>
+        <Button onClick={() => setOpened(true)} fullWidth={isMobile} maw={isMobile ? undefined : 200}>
+          Agregar vehículo
+        </Button>
       </Group>
       {state.vehicles.length === 0 ? (
         <Stack align="center" py="lg">
@@ -51,7 +57,7 @@ export function DashboardPage() {
         opened={opened}
         onClose={() => setOpened(false)}
         title="Nuevo vehículo"
-        centered
+        {...modalProps}
       >
         <VehicleForm onSubmit={handleAdd} onCancel={() => setOpened(false)} />
       </Modal>

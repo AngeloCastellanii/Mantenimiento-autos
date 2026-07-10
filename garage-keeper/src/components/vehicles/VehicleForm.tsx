@@ -1,4 +1,4 @@
-import { Button, Group, NumberInput, Stack, TextInput } from '@mantine/core';
+import { Button, Group, NumberInput, SimpleGrid, Stack, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import type { Vehicle } from '../../types';
@@ -57,18 +57,18 @@ export function VehicleForm({ initial, onSubmit, onCancel }: VehicleFormProps) {
     <form onSubmit={handleSubmit}>
       <Stack>
         <TextInput label="Alias" placeholder="Mi Corolla" {...form.getInputProps('alias')} />
-        <Group grow>
+        <SimpleGrid cols={{ base: 1, xs: 2 }} spacing="sm">
           <TextInput label="Marca" {...form.getInputProps('brand')} />
           <TextInput label="Modelo" {...form.getInputProps('model')} />
-        </Group>
-        <Group grow>
+        </SimpleGrid>
+        <SimpleGrid cols={{ base: 1, xs: 2 }} spacing="sm">
           <NumberInput label="Año" {...form.getInputProps('year')} />
           <NumberInput
             label="Kilometraje actual"
             thousandSeparator="."
             {...form.getInputProps('currentMileage')}
           />
-        </Group>
+        </SimpleGrid>
         <TextInput label="Placa (opcional)" {...form.getInputProps('plate')} />
         <Group justify="flex-end" mt="md">
           <Button variant="default" onClick={onCancel}>

@@ -29,6 +29,8 @@ import {
   IconTrash,
 } from '@tabler/icons-react';
 import { useGarage } from '../context/GarageContext';
+import { useIsMobile } from '../hooks/useIsMobile';
+import { useResponsiveModalProps } from '../hooks/useResponsiveModal';
 import { useVehicleAlerts } from '../hooks/useMaintenanceAlerts';
 import { totalCostByVehicle } from '../services/selectors';
 import { PageHeader } from '../components/layout/PageHeader';
@@ -85,6 +87,8 @@ export function VehicleDetailPage() {
   const [delVehOpened, { open: openDelVeh, close: closeDelVeh }] =
     useDisclosure(false);
   const [saving, setSaving] = useState(false);
+  const isMobile = useIsMobile();
+  const modalProps = useResponsiveModalProps();
 
   if (!vehicle) {
     return (
@@ -205,11 +209,12 @@ export function VehicleDetailPage() {
           { label: vehicle.alias },
         ]}
         action={
-          <Group gap="xs">
+          <Group gap="xs" wrap="wrap" justify={isMobile ? 'stretch' : 'flex-end'} w={isMobile ? '100%' : 'auto'}>
             <Button
               variant="default"
               leftSection={<IconPencil size={16} />}
               onClick={openEditVeh}
+              fullWidth={isMobile}
             >
               Editar
             </Button>
@@ -218,6 +223,7 @@ export function VehicleDetailPage() {
               variant="light"
               leftSection={<IconTrash size={16} />}
               onClick={openDelVeh}
+              fullWidth={isMobile}
             >
               Eliminar
             </Button>
@@ -227,13 +233,13 @@ export function VehicleDetailPage() {
 
       {/* Resumen del vehículo */}
       <Card withBorder padding="lg" radius="md" mb="lg">
-        <Group justify="space-between">
-          <Group gap="sm">
+        <Stack gap="md">
+          <Group gap="sm" wrap="nowrap" align="flex-start">
             <ThemeIcon variant="light" size={48} radius="md">
               <IconCar size={26} />
             </ThemeIcon>
-            <div>
-              <Group gap="xs">
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <Group gap="xs" wrap="wrap">
                 <Text fw={600} size="lg">
                   {vehicle.alias}
                 </Text>
@@ -246,7 +252,7 @@ export function VehicleDetailPage() {
               </Text>
             </div>
           </Group>
-          <div style={{ textAlign: 'right' }}>
+          <div>
             <Text size="xs" c="dimmed" tt="uppercase" fw={600}>
               Total mantenimiento
             </Text>
@@ -254,24 +260,24 @@ export function VehicleDetailPage() {
               {formatCurrency(totalCostByVehicle(state, id))}
             </Text>
           </div>
-        </Group>
+        </Stack>
       </Card>
 
-      <Group justify="flex-end" mb="md">
-        <Button
-          leftSection={<IconPlus size={16} />}
-          onClick={() => {
-            setEditing(null);
-            openForm();
-          }}
-        >
-          Registrar mantenimiento
-        </Button>
-      </Group>
+      <Button
+        leftSection={<IconPlus size={16} />}
+        onClick={() => {
+          setEditing(null);
+          openForm();
+        }}
+        fullWidth={isMobile}
+        mb="md"
+      >
+        Registrar mantenimiento
+      </Button>
 
       {/* Tabs = Compound Components (patrón académico) */}
-      <Tabs defaultValue="historial">
-        <Tabs.List mb="md">
+      <Tabs defaultValue="historial" orientation={isMobile ? 'vertical' : 'horizontal'}>
+        <Tabs.List mb="md" grow={isMobile}>
           <Tabs.Tab
             value="historial"
             leftSection={<IconClipboardList size={16} />}
@@ -340,7 +346,7 @@ export function VehicleDetailPage() {
           closeForm();
         }}
         title={editing ? 'Editar mantenimiento' : 'Registrar mantenimiento'}
-        centered
+        {...modalProps}
       >
         {saving && (
           <Overlay backgroundOpacity={0.35} blur={1} zIndex={1000}>
@@ -379,7 +385,7 @@ export function VehicleDetailPage() {
         opened={pendingDelete !== null}
         onClose={() => setPendingDelete(null)}
         title="Eliminar mantenimiento"
-        centered
+        {...modalProps}
       >
         <Stack>
           <Text size="sm">
@@ -402,7 +408,7 @@ export function VehicleDetailPage() {
         opened={editVehOpened}
         onClose={closeEditVeh}
         title="Editar vehículo"
-        centered
+        {...modalProps}
       >
         <VehicleForm
           initial={vehicle}
@@ -416,7 +422,7 @@ export function VehicleDetailPage() {
         opened={delVehOpened}
         onClose={closeDelVeh}
         title="Eliminar vehículo"
-        centered
+        {...modalProps}
       >
         <Stack>
           <Text size="sm">

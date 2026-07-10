@@ -18,7 +18,11 @@ export function PageHeader({ title, crumbs, action }: PageHeaderProps) {
   return (
     <>
       {crumbs && crumbs.length > 0 && (
-        <Breadcrumbs mb="sm" separator={<IconChevronRight size={14} />}>
+        <Breadcrumbs
+          mb="sm"
+          separator={<IconChevronRight size={14} />}
+          styles={{ breadcrumb: { lineHeight: 1.4 } }}
+        >
           {crumbs.map((crumb) =>
             crumb.to ? (
               <Anchor component={Link} to={crumb.to} key={crumb.label} size="sm">
@@ -32,8 +36,10 @@ export function PageHeader({ title, crumbs, action }: PageHeaderProps) {
           )}
         </Breadcrumbs>
       )}
-      <Group justify="space-between" align="center" wrap="nowrap" mb="lg">
-        <Title order={2}>{title}</Title>
+      <Group justify="space-between" align="flex-start" wrap="wrap" gap="sm" mb="lg">
+        <Title order={2} style={{ flex: 1, minWidth: 0, wordBreak: 'break-word' }}>
+          {title}
+        </Title>
         {action}
       </Group>
     </>
