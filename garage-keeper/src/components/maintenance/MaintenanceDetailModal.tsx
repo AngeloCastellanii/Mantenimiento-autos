@@ -67,7 +67,7 @@ export function MaintenanceDetailModal({
               value={formatMileage(maintenance.mileage)}
             />
             <Field label="Costo" value={formatCurrency(maintenance.cost)} />
-            <Field label="PitsTienda" value={maintenance.provider} />
+            <Field label="Mecánico/Taller" value={maintenance.provider} />
           </SimpleGrid>
 
           {maintenance.notes && (

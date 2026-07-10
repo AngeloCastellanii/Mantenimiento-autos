@@ -33,7 +33,7 @@ export function WelcomeBanner({ onAddVehicle }: WelcomeBannerProps) {
         </Title>
         <Text size="sm" maw={640} c="rgba(255,255,255,0.85)">
           {APP_DESCRIPTION} Empieza agregando un vehículo y luego registra cada
-          visita a tu PitsTienda de confianza.
+          visita a tu mecánico o taller de confianza.
         </Text>
         <Group mt="xs" wrap="wrap">
           <Button
