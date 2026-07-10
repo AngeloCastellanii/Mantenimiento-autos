@@ -1,0 +1,6 @@
+{
+  "installCommand": "cd garage-keeper && pnpm install",
+  "buildCommand": "cd garage-keeper && pnpm build",
+  "outputDirectory": "garage-keeper/dist",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
