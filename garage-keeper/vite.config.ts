@@ -11,8 +11,8 @@ export default defineConfig({
       injectRegister: 'auto',
       includeAssets: ['favicon.svg', 'icon-maskable.svg'],
       manifest: {
-        name: 'GarageKeeper · Mantenimiento de autos',
-        short_name: 'GarageKeeper',
+        name: 'CarroServizio · Mantenimiento de autos',
+        short_name: 'CarroServizio',
         description:
           'Registra vehículos, historial de servicios y alertas de mantenimiento.',
         theme_color: '#238d4b',

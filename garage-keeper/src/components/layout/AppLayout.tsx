@@ -8,6 +8,7 @@ import {
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { SHELL_TRANSITION } from '../../app/theme';
 import { BrandMark } from './BrandMark';
+import { ErrorBoundary } from './ErrorBoundary';
 
 const navItems = [
   {
@@ -99,7 +100,9 @@ export function AppLayout() {
           background: 'var(--gk-page-gradient)',
         }}
       >
-        <Outlet />
+        <ErrorBoundary key={location.pathname}>
+          <Outlet />
+        </ErrorBoundary>
       </AppShell.Main>
     </AppShell>
   );

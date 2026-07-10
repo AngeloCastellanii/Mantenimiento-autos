@@ -1,7 +1,7 @@
 import { seedData } from '../data/seed';
 import type { GarageState } from '../types';
 
-const STORAGE_KEY = 'garage-keeper-v1';
+const STORAGE_KEY = 'carroservizio-v2';
 
 export function loadState(): GarageState {
   try {

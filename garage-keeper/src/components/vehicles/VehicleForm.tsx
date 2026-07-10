@@ -69,6 +69,8 @@ export function VehicleForm({ initial, onSubmit, onCancel }: VehicleFormProps) {
           <NumberInput
             label="Kilometraje actual"
             thousandSeparator="."
+            decimalSeparator=","
+            allowDecimal={false}
             {...form.getInputProps('currentMileage')}
           />
         </SimpleGrid>
