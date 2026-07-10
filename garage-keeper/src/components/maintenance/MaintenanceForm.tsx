@@ -1,13 +1,24 @@
-import { Button, Group, NumberInput, Select, Stack, Textarea, TextInput } from '@mantine/core';
+// Formulario crear/editar mantenimiento (ESPECIFICACION §4.3, §8.2).
+// MANTENIMIENTOS — owner: Marcial.
+import {
+  Alert,
+  Button,
+  Group,
+  NumberInput,
+  Select,
+  Stack,
+  Textarea,
+  TextInput,
+} from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import { notifications } from '@mantine/notifications';
-import dayjs from 'dayjs';
+import { IconAlertTriangle } from '@tabler/icons-react';
 import { MAINTENANCE_OPTIONS } from '../../constants/maintenance';
+import { dayjs } from '../../lib/format';
 import type { Maintenance, MaintenanceType } from '../../types';
 
 export interface MaintenanceFormValues {
-  type: MaintenanceType;
+  type: MaintenanceType | null;
   date: Date | null;
   mileage: number | string;
   cost: number | string;
@@ -17,74 +28,134 @@ export interface MaintenanceFormValues {
 
 interface MaintenanceFormProps {
   initial?: Maintenance;
+  /** Máximo km de servicios previos del vehículo (regla cruzada §4.3). */
+  lastMileage?: number;
   onSubmit: (values: MaintenanceFormValues) => void;
   onCancel: () => void;
 }
 
+const TODAY = new Date();
+
 export function MaintenanceForm({
   initial,
+  lastMileage,
   onSubmit,
   onCancel,
 }: MaintenanceFormProps) {
   const form = useForm<MaintenanceFormValues>({
+    mode: 'controlled',
     initialValues: {
-      type: initial?.type ?? 'oil_change',
-      date: initial ? dayjs(initial.date).toDate() : new Date(),
-      mileage: initial?.mileage ?? 0,
-      cost: initial?.cost ?? 0,
+      type: initial?.type ?? null,
+      date: initial ? dayjs(initial.date).toDate() : TODAY,
+      mileage: initial?.mileage ?? '',
+      cost: initial?.cost ?? '',
       provider: initial?.provider ?? '',
       notes: initial?.notes ?? '',
     },
     validate: {
-      type: (v) => (!v ? 'Requerido' : null),
-      date: (v) => (!v ? 'Requerido' : null),
-      mileage: (v) => (Number(v) < 0 ? 'Debe ser ≥ 0' : null),
-      cost: (v) => (Number(v) < 0 ? 'Debe ser ≥ 0' : null),
-      provider: (v) => (v.trim().length < 2 ? 'Mínimo 2 caracteres' : null),
+      type: (v) => (v ? null : 'Selecciona un tipo de servicio'),
+      date: (v) => {
+        if (!v) return 'Fecha requerida';
+        return dayjs(v).isAfter(dayjs(), 'day')
+          ? 'La fecha no puede ser futura'
+          : null;
+      },
+      mileage: (v) =>
+        v !== '' && Number.isInteger(Number(v)) && Number(v) >= 0
+          ? null
+          : 'Kilometraje entero ≥ 0',
+      cost: (v) => (v !== '' && Number(v) >= 0 ? null : 'Costo válido ≥ 0'),
+      provider: (v) =>
+        v.trim().length < 2 || v.trim().length > 80
+          ? 'Taller entre 2 y 80 caracteres'
+          : null,
+      notes: (v) => (v.length > 500 ? 'Máx 500 caracteres' : null),
     },
   });
 
-  const handleSubmit = form.onSubmit((values) => {
-    if (values.date && dayjs(values.date).isAfter(dayjs(), 'day')) {
-      form.setFieldError('date', 'No puede ser futura');
-      return;
-    }
-    onSubmit(values);
-    notifications.show({
-      title: initial ? 'Mantenimiento actualizado' : 'Mantenimiento registrado',
-      message: 'Cambios guardados',
-      color: 'green',
-    });
-  });
+  // Regla cruzada: advertencia visual (no bloquea) si el km es menor al último.
+  const mileageNum = Number(form.values.mileage);
+  const showMileageWarning =
+    lastMileage != null &&
+    form.values.mileage !== '' &&
+    Number.isFinite(mileageNum) &&
+    mileageNum < lastMileage;
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Stack>
+    <form onSubmit={form.onSubmit(onSubmit)}>
+      <Stack gap="sm">
         <Select
           label="Tipo de servicio"
+          placeholder="Selecciona"
+          withAsterisk
           data={MAINTENANCE_OPTIONS}
+          key={form.key('type')}
           {...form.getInputProps('type')}
         />
-        <DatePickerInput
-          label="Fecha"
-          valueFormat="DD/MM/YYYY"
-          {...form.getInputProps('date')}
-        />
-        <Group grow>
+        <Group grow align="flex-start">
+          <DatePickerInput
+            label="Fecha del servicio"
+            placeholder="Selecciona fecha"
+            withAsterisk
+            maxDate={TODAY}
+            valueFormat="DD/MM/YYYY"
+            key={form.key('date')}
+            {...form.getInputProps('date')}
+          />
           <NumberInput
             label="Kilometraje"
+            placeholder="80000"
+            withAsterisk
+            min={0}
             thousandSeparator="."
+            decimalSeparator=","
+            suffix=" km"
+            key={form.key('mileage')}
             {...form.getInputProps('mileage')}
           />
+        </Group>
+        {showMileageWarning && (
+          <Alert
+            variant="light"
+            color="orange"
+            icon={<IconAlertTriangle size={16} />}
+            p="xs"
+          >
+            El kilometraje es menor al último registrado ({lastMileage} km).
+            Verifica el dato.
+          </Alert>
+        )}
+        <Group grow align="flex-start">
           <NumberInput
-            label="Costo ($)"
-            decimalScale={2}
+            label="Costo"
+            placeholder="45"
+            withAsterisk
+            min={0}
+            prefix="$"
+            thousandSeparator="."
+            decimalSeparator=","
+            key={form.key('cost')}
             {...form.getInputProps('cost')}
           />
+          <TextInput
+            label="Taller / proveedor"
+            placeholder="AutoFast"
+            withAsterisk
+            key={form.key('provider')}
+            {...form.getInputProps('provider')}
+          />
         </Group>
-        <TextInput label="Taller / proveedor" {...form.getInputProps('provider')} />
-        <Textarea label="Notas (opcional)" {...form.getInputProps('notes')} />
-        <Group justify="flex-end" mt="md">
+        <Textarea
+          label="Notas"
+          description="Opcional"
+          placeholder="Detalles del servicio…"
+          autosize
+          minRows={2}
+          maxRows={4}
+          key={form.key('notes')}
+          {...form.getInputProps('notes')}
+        />
+        <Group justify="flex-end" mt="sm">
           <Button variant="default" onClick={onCancel}>
             Cancelar
           </Button>

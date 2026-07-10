@@ -1,55 +1,106 @@
-import { Button, Group, Modal, Stack, Text } from '@mantine/core';
-import dayjs from 'dayjs';
+// Modal de detalle de un mantenimiento (ESPECIFICACION §8.4).
+// MANTENIMIENTOS — owner: Marcial.
+import {
+  Badge,
+  Button,
+  Divider,
+  Group,
+  Modal,
+  SimpleGrid,
+  Stack,
+  Text,
+} from '@mantine/core';
+import { IconPencil, IconTrash } from '@tabler/icons-react';
 import { MAINTENANCE_LABELS } from '../../constants/maintenance';
+import { formatCurrency, formatDate, formatMileage } from '../../lib/format';
 import type { Maintenance } from '../../types';
+import { TYPE_BADGE_COLOR } from './MaintenanceTable';
 
 interface MaintenanceDetailModalProps {
   maintenance: Maintenance | null;
   opened: boolean;
   onClose: () => void;
-  onDelete: (id: string) => void;
+  onEdit: (m: Maintenance) => void;
+  onDelete: (m: Maintenance) => void;
+}
+
+function Field({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <Text size="xs" c="dimmed" tt="uppercase" fw={600}>
+        {label}
+      </Text>
+      <Text>{value}</Text>
+    </div>
+  );
 }
 
 export function MaintenanceDetailModal({
   maintenance,
   opened,
   onClose,
+  onEdit,
   onDelete,
 }: MaintenanceDetailModalProps) {
-  if (!maintenance) return null;
-
   return (
-    <Modal opened={opened} onClose={onClose} title="Detalle del servicio" centered>
-      <Stack gap="xs">
-        <Text>
-          <strong>Tipo:</strong> {MAINTENANCE_LABELS[maintenance.type]}
-        </Text>
-        <Text>
-          <strong>Fecha:</strong> {dayjs(maintenance.date).format('DD/MM/YYYY')}
-        </Text>
-        <Text>
-          <strong>Kilometraje:</strong> {maintenance.mileage.toLocaleString()} km
-        </Text>
-        <Text>
-          <strong>Costo:</strong> ${maintenance.cost.toLocaleString()}
-        </Text>
-        <Text>
-          <strong>Taller:</strong> {maintenance.provider}
-        </Text>
-        {maintenance.notes && (
-          <Text>
-            <strong>Notas:</strong> {maintenance.notes}
-          </Text>
-        )}
-        <Group justify="flex-end" mt="md">
-          <Button color="red" variant="light" onClick={() => onDelete(maintenance.id)}>
-            Eliminar
-          </Button>
-          <Button variant="default" onClick={onClose}>
-            Cerrar
-          </Button>
-        </Group>
-      </Stack>
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title="Detalle del mantenimiento"
+      centered
+    >
+      {maintenance && (
+        <Stack gap="md">
+          <Group>
+            <Badge
+              size="lg"
+              variant="light"
+              color={TYPE_BADGE_COLOR[maintenance.type]}
+            >
+              {MAINTENANCE_LABELS[maintenance.type]}
+            </Badge>
+          </Group>
+
+          <SimpleGrid cols={2} spacing="md">
+            <Field label="Fecha" value={formatDate(maintenance.date)} />
+            <Field
+              label="Kilometraje"
+              value={formatMileage(maintenance.mileage)}
+            />
+            <Field label="Costo" value={formatCurrency(maintenance.cost)} />
+            <Field label="Taller" value={maintenance.provider} />
+          </SimpleGrid>
+
+          {maintenance.notes && (
+            <div>
+              <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={4}>
+                Notas
+              </Text>
+              <Text size="sm">{maintenance.notes}</Text>
+            </div>
+          )}
+
+          <Divider />
+
+          <Group justify="flex-end">
+            <Button
+              variant="default"
+              leftSection={<IconPencil size={16} />}
+              onClick={() => onEdit(maintenance)}
+            >
+              Editar
+            </Button>
+            <Button
+              color="red"
+              variant="light"
+              leftSection={<IconTrash size={16} />}
+              onClick={() => onDelete(maintenance)}
+            >
+              Eliminar
+            </Button>
+          </Group>
+        </Stack>
+      )}
     </Modal>
   );
 }

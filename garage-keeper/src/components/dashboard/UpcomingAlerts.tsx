@@ -1,49 +1,100 @@
-import { Badge, Card, Group, Stack, Text } from '@mantine/core';
+// Panel "Próximos mantenimientos" (ESPECIFICACION §6.3, RF-04).
+// DASHBOARD — owner: Marcial.
+import {
+  Badge,
+  Card,
+  Group,
+  Stack,
+  Text,
+  ThemeIcon,
+  UnstyledButton,
+} from '@mantine/core';
+import {
+  IconAlertTriangle,
+  IconCircleCheck,
+  IconExclamationCircle,
+} from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
-import { MAINTENANCE_LABELS } from '../../constants/maintenance';
+import { ALERT_COLOR } from '../../app/theme';
 import { useMaintenanceAlerts } from '../../hooks/useMaintenanceAlerts';
+import type { AlertSeverity, MaintenanceAlert } from '../../types';
 
 interface UpcomingAlertsProps {
+  /** Si se omite, usa las alertas de toda la flota (dashboard/próximos). */
+  alerts?: MaintenanceAlert[];
+  /** Limita cuántas alertas se muestran (dashboard). */
   limit?: number;
+  emptyLabel?: string;
 }
 
-export function UpcomingAlerts({ limit }: UpcomingAlertsProps) {
-  const navigate = useNavigate();
-  const alerts = useMaintenanceAlerts().filter((a) => a.severity !== 'ok');
-  const visible = limit ? alerts.slice(0, limit) : alerts;
+const SEVERITY_ICON: Record<AlertSeverity, typeof IconAlertTriangle> = {
+  critical: IconExclamationCircle,
+  warning: IconAlertTriangle,
+  ok: IconCircleCheck,
+};
 
-  if (visible.length === 0) {
+const SEVERITY_TEXT: Record<AlertSeverity, string> = {
+  critical: 'Vencido',
+  warning: 'Próximo',
+  ok: 'Al día',
+};
+
+export function UpcomingAlerts({
+  alerts: alertsProp,
+  limit,
+  emptyLabel = 'Todo al día. Sin mantenimientos próximos.',
+}: UpcomingAlertsProps) {
+  const navigate = useNavigate();
+  const fleetAlerts = useMaintenanceAlerts();
+  const alerts = alertsProp ?? fleetAlerts;
+  const shown = limit ? alerts.slice(0, limit) : alerts;
+
+  if (alerts.length === 0) {
     return (
-      <Card withBorder>
-        <Text c="dimmed">No hay alertas pendientes</Text>
+      <Card withBorder padding="lg" radius="md">
+        <Group>
+          <ThemeIcon variant="light" color="green" size="lg" radius="md">
+            <IconCircleCheck size={20} />
+          </ThemeIcon>
+          <Text c="dimmed">{emptyLabel}</Text>
+        </Group>
       </Card>
     );
   }
 
   return (
-    <Stack gap="sm">
-      {visible.map((alert) => (
-        <Card
-          key={`${alert.vehicleId}-${alert.type}`}
-          withBorder
-          padding="md"
-          style={{ cursor: 'pointer' }}
-          onClick={() => navigate(`/vehiculos/${alert.vehicleId}`)}
-        >
-          <Group justify="space-between">
-            <div>
-              <Text fw={600}>{alert.vehicleAlias}</Text>
-              <Text size="sm">{alert.message}</Text>
-              <Text size="xs" c="dimmed">
-                {MAINTENANCE_LABELS[alert.type]}
-              </Text>
-            </div>
-            <Badge color={alert.severity === 'critical' ? 'red' : 'orange'}>
-              {alert.severity === 'critical' ? 'Urgente' : 'Pronto'}
-            </Badge>
-          </Group>
-        </Card>
-      ))}
+    <Stack gap="xs">
+      {shown.map((alert, i) => {
+        const Icon = SEVERITY_ICON[alert.severity];
+        const color = ALERT_COLOR[alert.severity];
+        return (
+          <UnstyledButton
+            key={`${alert.vehicleId}-${alert.type}-${i}`}
+            onClick={() => navigate(`/vehiculos/${alert.vehicleId}`)}
+          >
+            <Card withBorder padding="sm" radius="md">
+              <Group justify="space-between" wrap="nowrap">
+                <Group wrap="nowrap" gap="sm">
+                  <ThemeIcon variant="light" color={color} size="lg" radius="md">
+                    <Icon size={20} />
+                  </ThemeIcon>
+                  <div>
+                    <Text fw={600} size="sm">
+                      {alert.vehicleAlias}
+                    </Text>
+                    <Text size="sm" c="dimmed">
+                      {alert.message}
+                    </Text>
+                  </div>
+                </Group>
+                <Badge color={color} variant="light">
+                  {SEVERITY_TEXT[alert.severity]}
+                </Badge>
+              </Group>
+            </Card>
+          </UnstyledButton>
+        );
+      })}
     </Stack>
   );
 }
