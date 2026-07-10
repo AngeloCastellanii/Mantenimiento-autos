@@ -14,7 +14,7 @@ import {
 import { DatePickerInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { IconAlertTriangle } from '@tabler/icons-react';
-import { MAINTENANCE_OPTIONS } from '../../constants/maintenance';
+import { useServiceTypes } from '../../hooks/useServiceTypes';
 import { dayjs } from '../../lib/format';
 import type { Maintenance, MaintenanceType } from '../../types';
 
@@ -43,6 +43,7 @@ export function MaintenanceForm({
   onSubmit,
   onCancel,
 }: MaintenanceFormProps) {
+  const { options } = useServiceTypes();
   const form = useForm<MaintenanceFormValues>({
     mode: 'controlled',
     initialValues: {
@@ -89,7 +90,8 @@ export function MaintenanceForm({
           label="Tipo de servicio"
           placeholder="Selecciona"
           withAsterisk
-          data={MAINTENANCE_OPTIONS}
+          searchable
+          data={options}
           key={form.key('type')}
           {...form.getInputProps('type')}
         />

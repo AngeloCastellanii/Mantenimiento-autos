@@ -1,6 +1,8 @@
 import type { GarageState } from '../types';
+import { DEFAULT_SERVICE_TYPES } from '../constants/maintenance';
 
 export const seedData: GarageState = {
+  serviceTypes: DEFAULT_SERVICE_TYPES,
   vehicles: [
     {
       id: 'v1',

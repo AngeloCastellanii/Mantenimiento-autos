@@ -15,7 +15,9 @@ export function useMaintenanceAlerts(includeOk = false): MaintenanceAlert[] {
   const { state } = useGarage();
   return useMemo(
     () =>
-      computeAllAlerts(state.vehicles, state.maintenances, { includeOk }),
+      computeAllAlerts(state.vehicles, state.maintenances, state.serviceTypes, {
+        includeOk,
+      }),
     [state, includeOk],
   );
 }
@@ -28,6 +30,6 @@ export function useVehicleAlerts(vehicleId: string): MaintenanceAlert[] {
   return useMemo(() => {
     const vehicle = state.vehicles.find((v) => v.id === vehicleId);
     if (!vehicle) return [];
-    return computeVehicleAlerts(vehicle, state.maintenances);
+    return computeVehicleAlerts(vehicle, state.maintenances, state.serviceTypes);
   }, [state, vehicleId]);
 }

@@ -13,13 +13,10 @@ import {
   UnstyledButton,
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
-import {
-  MAINTENANCE_LABELS,
-  MAINTENANCE_OPTIONS,
-} from '../../constants/maintenance';
+import { useServiceTypes } from '../../hooks/useServiceTypes';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { formatCurrency, formatDate, formatMileage, dayjs } from '../../lib/format';
-import type { Maintenance, MaintenanceType } from '../../types';
+import type { Maintenance } from '../../types';
 import { EmptyMaintenanceState } from './EmptyMaintenanceState';
 
 interface MaintenanceTableProps {
@@ -28,22 +25,16 @@ interface MaintenanceTableProps {
   onAdd?: () => void;
 }
 
-const TYPE_BADGE_COLOR: Record<MaintenanceType, string> = {
-  oil_change: 'yellow',
-  brakes: 'red',
-  tires: 'dark',
-  battery: 'grape',
-  alignment: 'cyan',
-  general_inspection: 'blue',
-  other: 'gray',
-};
-
 function MaintenanceMobileList({
   items,
   onRowClick,
+  getLabel,
+  getColor,
 }: {
   items: Maintenance[];
   onRowClick: (m: Maintenance) => void;
+  getLabel: (id: string) => string;
+  getColor: (id: string) => string;
 }) {
   return (
     <Stack gap="sm">
@@ -51,8 +42,8 @@ function MaintenanceMobileList({
         <UnstyledButton key={m.id} onClick={() => onRowClick(m)} w="100%">
           <Card withBorder padding="md" radius="md">
             <Group justify="space-between" align="flex-start" wrap="nowrap" mb="xs">
-              <Badge variant="light" color={TYPE_BADGE_COLOR[m.type]}>
-                {MAINTENANCE_LABELS[m.type]}
+              <Badge variant="light" color={getColor(m.type)}>
+                {getLabel(m.type)}
               </Badge>
               <Text size="sm" fw={600}>
                 {formatCurrency(m.cost)}
@@ -77,6 +68,7 @@ export function MaintenanceTable({
   onAdd,
 }: MaintenanceTableProps) {
   const isMobile = useIsMobile();
+  const { options, getLabel, getColor } = useServiceTypes();
   const [filterType, setFilterType] = useState<string | null>(null);
   const [fromDate, setFromDate] = useState<Date | null>(null);
   const [toDate, setToDate] = useState<Date | null>(null);
@@ -112,8 +104,9 @@ export function MaintenanceTable({
           label="Tipo de servicio"
           placeholder="Todos los tipos"
           clearable
+          searchable
           w={isMobile ? '100%' : 240}
-          data={MAINTENANCE_OPTIONS}
+          data={options}
           value={filterType}
           onChange={setFilterType}
           aria-label="Filtrar por tipo de servicio"
@@ -144,7 +137,12 @@ export function MaintenanceTable({
       {filtered.length === 0 ? (
         <EmptyMaintenanceState filtered />
       ) : isMobile ? (
-        <MaintenanceMobileList items={filtered} onRowClick={onRowClick} />
+        <MaintenanceMobileList
+          items={filtered}
+          onRowClick={onRowClick}
+          getLabel={getLabel}
+          getColor={getColor}
+        />
       ) : (
         <Table.ScrollContainer minWidth={640}>
           <Table highlightOnHover verticalSpacing="sm" striped>
@@ -166,8 +164,8 @@ export function MaintenanceTable({
                 >
                   <Table.Td>{formatDate(m.date)}</Table.Td>
                   <Table.Td>
-                    <Badge variant="light" color={TYPE_BADGE_COLOR[m.type]}>
-                      {MAINTENANCE_LABELS[m.type]}
+                    <Badge variant="light" color={getColor(m.type)}>
+                      {getLabel(m.type)}
                     </Badge>
                   </Table.Td>
                   <Table.Td ta="right">{formatMileage(m.mileage)}</Table.Td>
@@ -182,5 +180,3 @@ export function MaintenanceTable({
     </>
   );
 }
-
-export { TYPE_BADGE_COLOR };

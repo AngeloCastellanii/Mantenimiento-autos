@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from 'react';
 import { loadState, saveState } from '../services/storage';
-import type { GarageState, Maintenance, Vehicle } from '../types';
+import type { GarageState, Maintenance, ServiceType, Vehicle } from '../types';
 
 type Action =
   | { type: 'LOAD'; payload: GarageState }
@@ -16,7 +16,10 @@ type Action =
   | { type: 'DELETE_VEHICLE'; payload: string }
   | { type: 'ADD_MAINTENANCE'; payload: Maintenance }
   | { type: 'UPDATE_MAINTENANCE'; payload: Maintenance }
-  | { type: 'DELETE_MAINTENANCE'; payload: string };
+  | { type: 'DELETE_MAINTENANCE'; payload: string }
+  | { type: 'ADD_SERVICE_TYPE'; payload: ServiceType }
+  | { type: 'UPDATE_SERVICE_TYPE'; payload: ServiceType }
+  | { type: 'DELETE_SERVICE_TYPE'; payload: string };
 
 function reducer(state: GarageState, action: Action): GarageState {
   switch (action.type) {
@@ -33,6 +36,7 @@ function reducer(state: GarageState, action: Action): GarageState {
       };
     case 'DELETE_VEHICLE':
       return {
+        ...state,
         vehicles: state.vehicles.filter((v) => v.id !== action.payload),
         maintenances: state.maintenances.filter(
           (m) => m.vehicleId !== action.payload,
@@ -41,6 +45,7 @@ function reducer(state: GarageState, action: Action): GarageState {
     case 'ADD_MAINTENANCE': {
       const maintenance = action.payload;
       return {
+        ...state,
         vehicles: state.vehicles.map((v) =>
           v.id === maintenance.vehicleId &&
           maintenance.mileage > v.currentMileage
@@ -53,6 +58,7 @@ function reducer(state: GarageState, action: Action): GarageState {
     case 'UPDATE_MAINTENANCE': {
       const maintenance = action.payload;
       return {
+        ...state,
         vehicles: state.vehicles.map((v) =>
           v.id === maintenance.vehicleId &&
           maintenance.mileage > v.currentMileage
@@ -69,6 +75,27 @@ function reducer(state: GarageState, action: Action): GarageState {
         ...state,
         maintenances: state.maintenances.filter((m) => m.id !== action.payload),
       };
+    case 'ADD_SERVICE_TYPE':
+      return { ...state, serviceTypes: [...state.serviceTypes, action.payload] };
+    case 'UPDATE_SERVICE_TYPE':
+      return {
+        ...state,
+        serviceTypes: state.serviceTypes.map((t) =>
+          t.id === action.payload.id ? { ...t, ...action.payload } : t,
+        ),
+      };
+    case 'DELETE_SERVICE_TYPE': {
+      const target = state.serviceTypes.find((t) => t.id === action.payload);
+      if (!target || target.builtIn) return state; // no se eliminan integrados
+      return {
+        ...state,
+        serviceTypes: state.serviceTypes.filter((t) => t.id !== action.payload),
+        // Reasignar servicios del tipo eliminado a "Otro".
+        maintenances: state.maintenances.map((m) =>
+          m.type === action.payload ? { ...m, type: 'other' } : m,
+        ),
+      };
+    }
     default:
       return state;
   }
@@ -82,6 +109,9 @@ interface GarageContextValue {
   addMaintenance: (maintenance: Maintenance) => void;
   updateMaintenance: (maintenance: Maintenance) => void;
   deleteMaintenance: (id: string) => void;
+  addServiceType: (serviceType: ServiceType) => void;
+  updateServiceType: (serviceType: ServiceType) => void;
+  deleteServiceType: (id: string) => void;
 }
 
 const GarageContext = createContext<GarageContextValue | null>(null);
@@ -107,6 +137,12 @@ export function GarageProvider({ children }: { children: ReactNode }) {
         dispatch({ type: 'UPDATE_MAINTENANCE', payload: maintenance }),
       deleteMaintenance: (id) =>
         dispatch({ type: 'DELETE_MAINTENANCE', payload: id }),
+      addServiceType: (serviceType) =>
+        dispatch({ type: 'ADD_SERVICE_TYPE', payload: serviceType }),
+      updateServiceType: (serviceType) =>
+        dispatch({ type: 'UPDATE_SERVICE_TYPE', payload: serviceType }),
+      deleteServiceType: (id) =>
+        dispatch({ type: 'DELETE_SERVICE_TYPE', payload: id }),
     }),
     [state],
   );

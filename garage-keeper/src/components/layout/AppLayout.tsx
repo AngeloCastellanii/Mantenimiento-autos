@@ -4,6 +4,8 @@ import {
   IconAlertTriangle,
   IconCarSuv,
   IconHome,
+  IconTags,
+  IconWallet,
 } from '@tabler/icons-react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { SHELL_TRANSITION } from '../../app/theme';
@@ -24,10 +26,22 @@ const navItems = [
     icon: IconCarSuv,
   },
   {
+    label: 'Gastos',
+    description: 'Filtra y analiza costos',
+    path: '/gastos',
+    icon: IconWallet,
+  },
+  {
     label: 'Próximos',
     description: 'Alertas de servicio',
     path: '/proximos',
     icon: IconAlertTriangle,
+  },
+  {
+    label: 'Tipos de servicio',
+    description: 'Personaliza los servicios',
+    path: '/tipos-servicio',
+    icon: IconTags,
   },
 ];
 

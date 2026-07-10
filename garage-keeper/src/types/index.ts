@@ -1,11 +1,20 @@
-export type MaintenanceType =
-  | 'oil_change'
-  | 'brakes'
-  | 'tires'
-  | 'battery'
-  | 'alignment'
-  | 'general_inspection'
-  | 'other';
+// Los tipos de servicio ahora son dinámicos: el id es una cadena libre.
+// Los valores integrados usan ids estables para conservar las alertas.
+export type MaintenanceType = string;
+
+export interface ServiceType {
+  id: string;
+  label: string;
+  color?: string;
+  /** Umbral de kilometraje para alertar (opcional). */
+  km?: number;
+  /** Umbral de meses para alertar (opcional). */
+  months?: number;
+  /** Si es true, alerta cuando no hay registro previo. */
+  warnIfMissing?: boolean;
+  /** Tipos integrados no se pueden eliminar. */
+  builtIn?: boolean;
+}
 
 export interface Vehicle {
   id: string;
@@ -45,4 +54,5 @@ export interface MaintenanceAlert {
 export interface GarageState {
   vehicles: Vehicle[];
   maintenances: Maintenance[];
+  serviceTypes: ServiceType[];
 }

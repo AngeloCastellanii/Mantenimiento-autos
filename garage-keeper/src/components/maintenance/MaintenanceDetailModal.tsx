@@ -12,10 +12,9 @@ import {
 } from '@mantine/core';
 import { IconPencil, IconTrash } from '@tabler/icons-react';
 import { useResponsiveModalProps } from '../../hooks/useResponsiveModal';
-import { MAINTENANCE_LABELS } from '../../constants/maintenance';
+import { useServiceTypes } from '../../hooks/useServiceTypes';
 import { formatCurrency, formatDate, formatMileage } from '../../lib/format';
 import type { Maintenance } from '../../types';
-import { TYPE_BADGE_COLOR } from './MaintenanceTable';
 
 interface MaintenanceDetailModalProps {
   maintenance: Maintenance | null;
@@ -44,6 +43,7 @@ export function MaintenanceDetailModal({
   onDelete,
 }: MaintenanceDetailModalProps) {
   const modalProps = useResponsiveModalProps();
+  const { getLabel, getColor } = useServiceTypes();
 
   return (
     <Modal
@@ -55,12 +55,8 @@ export function MaintenanceDetailModal({
       {maintenance && (
         <Stack gap="md">
           <Group>
-            <Badge
-              size="lg"
-              variant="light"
-              color={TYPE_BADGE_COLOR[maintenance.type]}
-            >
-              {MAINTENANCE_LABELS[maintenance.type]}
+            <Badge size="lg" variant="light" color={getColor(maintenance.type)}>
+              {getLabel(maintenance.type)}
             </Badge>
           </Group>
 
