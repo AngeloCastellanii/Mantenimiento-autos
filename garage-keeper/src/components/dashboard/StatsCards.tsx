@@ -1,9 +1,9 @@
 import { Card, Group, SimpleGrid, Text, ThemeIcon } from '@mantine/core';
 import {
   IconAlertTriangle,
-  IconCar,
-  IconCoin,
-  IconTool,
+  IconCarSuv,
+  IconWallet,
+  IconTools,
 } from '@tabler/icons-react';
 import { globalCost } from '../../services/selectors';
 import { formatCurrency } from '../../lib/format';
@@ -20,21 +20,21 @@ export function StatsCards() {
       label: 'Gasto total',
       hint: 'Suma de todos los servicios',
       value: formatCurrency(globalCost(state)),
-      icon: IconCoin,
-      color: 'indigo',
+      icon: IconWallet,
+      color: 'forest',
     },
     {
       label: 'Vehículos',
       hint: 'Autos en tu garaje',
       value: String(state.vehicles.length),
-      icon: IconCar,
+      icon: IconCarSuv,
       color: 'teal',
     },
     {
       label: 'Servicios',
       hint: 'Mantenimientos registrados',
       value: String(state.maintenances.length),
-      icon: IconTool,
+      icon: IconTools,
       color: 'violet',
     },
     {

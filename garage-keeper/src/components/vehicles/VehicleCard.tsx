@@ -1,5 +1,5 @@
 import { Badge, Button, Card, Group, Stack, Text, ThemeIcon, Title } from '@mantine/core';
-import { IconArrowRight, IconCar, IconGauge } from '@tabler/icons-react';
+import { IconArrowRight, IconCarSuv, IconGauge } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { totalCostByVehicle } from '../../services/selectors';
 import { formatCurrency, formatMileage } from '../../lib/format';
@@ -34,10 +34,10 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
       }}
     >
       <Group justify="space-between" mb="sm" wrap="nowrap">
-        <ThemeIcon variant="light" color="indigo" size="lg" radius="md">
-          <IconCar size={20} />
+        <ThemeIcon variant="light" color="forest" size="lg" radius="md">
+          <IconCarSuv size={20} />
         </ThemeIcon>
-        <Badge variant="light" color="indigo">
+        <Badge variant="light" color="forest">
           {vehicle.year}
         </Badge>
       </Group>

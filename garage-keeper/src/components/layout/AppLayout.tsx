@@ -2,7 +2,7 @@ import { AppShell, Box, Burger, Divider, Group, NavLink, Text } from '@mantine/c
 import { useDisclosure } from '@mantine/hooks';
 import {
   IconAlertTriangle,
-  IconCar,
+  IconCarSuv,
   IconHome,
 } from '@tabler/icons-react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
@@ -20,7 +20,7 @@ const navItems = [
     label: 'Vehículos',
     description: 'Tus autos registrados',
     path: '/vehiculos',
-    icon: IconCar,
+    icon: IconCarSuv,
   },
   {
     label: 'Próximos',

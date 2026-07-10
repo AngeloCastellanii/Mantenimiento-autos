@@ -1,19 +1,49 @@
-import { createTheme, rem } from '@mantine/core';
+import { createTheme, rem, type MantineColorsTuple } from '@mantine/core';
 import type { AlertSeverity } from '../types';
 
+// Paleta "forest" (verde) — sello de marca sobrio y natural.
+const forest: MantineColorsTuple = [
+  '#ecf8f0',
+  '#d7efe0',
+  '#b1dfc1',
+  '#86cf9f',
+  '#63c283',
+  '#4cb972',
+  '#3fb568',
+  '#2e9f57',
+  '#238d4b',
+  '#0f7a3d',
+];
+
+// Neutro cálido "ink" para textos y superficies.
+const ink: MantineColorsTuple = [
+  '#f6f5f3',
+  '#e7e5e1',
+  '#cbc7bf',
+  '#aea79c',
+  '#958c7e',
+  '#867c6c',
+  '#7f7565',
+  '#6b6254',
+  '#5f5749',
+  '#524b3c',
+];
+
 export const theme = createTheme({
-  primaryColor: 'indigo',
+  primaryColor: 'forest',
+  primaryShade: { light: 6, dark: 5 },
+  colors: { forest, ink },
   fontFamily: 'Inter, system-ui, sans-serif',
-  defaultRadius: 'md',
+  defaultRadius: 'lg',
   headings: {
-    fontWeight: '700',
+    fontWeight: '800',
   },
   components: {
     Card: {
       defaultProps: {
         withBorder: true,
         shadow: 'sm',
-        radius: 'md',
+        radius: 'lg',
       },
     },
     Button: {
@@ -28,14 +58,10 @@ export const theme = createTheme({
       },
     },
   },
-  other: {
-    pageGradient:
-      'linear-gradient(180deg, var(--mantine-color-indigo-0) 0%, var(--mantine-color-gray-0) 220px)',
-  },
 });
 
 export const ALERT_COLOR: Record<AlertSeverity, string> = {
-  ok: 'green',
+  ok: 'teal',
   warning: 'orange',
   critical: 'red',
 };

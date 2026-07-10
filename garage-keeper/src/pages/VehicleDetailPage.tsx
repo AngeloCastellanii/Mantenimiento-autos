@@ -21,7 +21,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import {
   IconAlertTriangle,
-  IconCar,
+  IconCarSuv,
   IconClipboardList,
   IconInfoCircle,
   IconPencil,
@@ -95,7 +95,7 @@ export function VehicleDetailPage() {
       <Card withBorder padding="xl" radius="md">
         <Stack align="center" gap="sm">
           <ThemeIcon variant="light" color="gray" size={56} radius="xl">
-            <IconCar size={30} />
+            <IconCarSuv size={30} />
           </ThemeIcon>
           <Text fw={600}>Vehículo no encontrado</Text>
           <Button onClick={() => navigate('/vehiculos')}>
@@ -237,7 +237,7 @@ export function VehicleDetailPage() {
         <Stack gap="md">
           <Group gap="sm" wrap="nowrap" align="flex-start">
             <ThemeIcon variant="light" size={48} radius="md">
-              <IconCar size={26} />
+              <IconCarSuv size={26} />
             </ThemeIcon>
             <div style={{ minWidth: 0, flex: 1 }}>
               <Group gap="xs" wrap="wrap">

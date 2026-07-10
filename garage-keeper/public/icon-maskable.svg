@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
-  <rect width="512" height="512" fill="#1c4ed8"/>
+  <rect width="512" height="512" fill="#238d4b"/>
   <g transform="translate(96 150)">
     <path
       d="M8 118c0-8.8 7.2-16 16-16h22l22-58c4-10.6 14-17.6 25.3-17.6h133.4c11.3 0 21.3 7 25.3 17.6l22 58h22c8.8 0 16 7.2 16 16v44c0 8.8-7.2 16-16 16h-17a43 43 0 0 1-86 0H127a43 43 0 0 1-86 0H24c-8.8 0-16-7.2-16-16v-44Z"
       fill="#ffffff"
     />
-    <circle cx="100" cy="138" r="26" fill="#1c4ed8"/>
-    <circle cx="236" cy="138" r="26" fill="#1c4ed8"/>
-    <path d="M70 96h196l-18-46H88L70 96Z" fill="#bfdbfe"/>
+    <circle cx="100" cy="138" r="26" fill="#0f7a3d"/>
+    <circle cx="236" cy="138" r="26" fill="#0f7a3d"/>
+    <path d="M70 96h196l-18-46H88L70 96Z" fill="#d7efe0"/>
   </g>
 </svg>

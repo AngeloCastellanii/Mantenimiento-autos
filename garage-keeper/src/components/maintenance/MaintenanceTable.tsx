@@ -154,7 +154,7 @@ export function MaintenanceTable({
                 <Table.Th>Tipo</Table.Th>
                 <Table.Th ta="right">Km</Table.Th>
                 <Table.Th ta="right">Costo</Table.Th>
-                <Table.Th>Taller</Table.Th>
+                <Table.Th>PitsTienda</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>

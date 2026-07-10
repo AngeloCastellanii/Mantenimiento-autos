@@ -68,7 +68,7 @@ export function MaintenanceForm({
       cost: (v) => (v !== '' && Number(v) >= 0 ? null : 'Costo válido ≥ 0'),
       provider: (v) =>
         v.trim().length < 2 || v.trim().length > 80
-          ? 'Taller entre 2 y 80 caracteres'
+          ? 'PitsTienda entre 2 y 80 caracteres'
           : null,
       notes: (v) => (v.length > 500 ? 'Máx 500 caracteres' : null),
     },
@@ -139,7 +139,7 @@ export function MaintenanceForm({
             {...form.getInputProps('cost')}
           />
           <TextInput
-            label="Taller / proveedor"
+            label="PitsTienda"
             placeholder="AutoFast"
             withAsterisk
             key={form.key('provider')}

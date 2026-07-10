@@ -15,8 +15,8 @@ export default defineConfig({
         short_name: 'GarageKeeper',
         description:
           'Registra vehículos, historial de servicios y alertas de mantenimiento.',
-        theme_color: '#1c4ed8',
-        background_color: '#ffffff',
+        theme_color: '#238d4b',
+        background_color: '#f4f7f4',
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',

@@ -1,5 +1,5 @@
 import { Button, Group, Paper, Stack, Text, Title } from '@mantine/core';
-import { IconAlertTriangle, IconCar, IconPlus } from '@tabler/icons-react';
+import { IconAlertTriangle, IconCarSuv, IconPlus } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { APP_DESCRIPTION } from '../../constants/brand';
 import { useGarage } from '../../context/GarageContext';
@@ -23,18 +23,23 @@ export function WelcomeBanner({ onAddVehicle }: WelcomeBannerProps) {
       mb="xl"
       withBorder
       style={{
-        background:
-          'linear-gradient(135deg, var(--mantine-color-indigo-0) 0%, var(--mantine-color-blue-0) 100%)',
+        background: 'var(--mantine-color-forest-7)',
+        color: '#fff',
       }}
     >
       <Stack gap="sm">
-        <Title order={3}>Bienvenido a tu garaje digital</Title>
-        <Text c="dimmed" size="sm" maw={640}>
+        <Title order={3} c="white">
+          Bienvenido a tu garaje digital
+        </Title>
+        <Text size="sm" maw={640} c="rgba(255,255,255,0.85)">
           {APP_DESCRIPTION} Empieza agregando un vehículo y luego registra cada
-          visita al taller.
+          visita a tu PitsTienda de confianza.
         </Text>
         <Group mt="xs" wrap="wrap">
           <Button
+            color="white"
+            variant="white"
+            c="forest.7"
             leftSection={<IconPlus size={16} />}
             onClick={onAddVehicle}
             fullWidth={isMobile}
@@ -43,8 +48,9 @@ export function WelcomeBanner({ onAddVehicle }: WelcomeBannerProps) {
           </Button>
           {alerts.length > 0 && (
             <Button
-              variant="light"
-              color="orange"
+              variant="white"
+              color="white"
+              c="red.7"
               leftSection={<IconAlertTriangle size={16} />}
               onClick={() => navigate('/proximos')}
               fullWidth={isMobile}
@@ -54,8 +60,9 @@ export function WelcomeBanner({ onAddVehicle }: WelcomeBannerProps) {
           )}
           {state.vehicles.length > 0 && (
             <Button
-              variant="default"
-              leftSection={<IconCar size={16} />}
+              variant="outline"
+              color="white"
+              leftSection={<IconCarSuv size={16} />}
               onClick={() => navigate('/vehiculos')}
               fullWidth={isMobile}
             >
