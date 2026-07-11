@@ -277,17 +277,17 @@ export function VehicleDetailPage() {
       </Button>
 
       {/* Tabs = Compound Components (patrón académico) */}
-      <Tabs defaultValue="historial" orientation={isMobile ? 'vertical' : 'horizontal'}>
-        <Tabs.List mb="md" grow={isMobile}>
+      <Tabs defaultValue="historial" keepMounted={false}>
+        <Tabs.List mb="md" grow>
           <Tabs.Tab
             value="historial"
-            leftSection={<IconClipboardList size={16} />}
+            leftSection={!isMobile && <IconClipboardList size={16} />}
           >
             Historial
           </Tabs.Tab>
           <Tabs.Tab
             value="alertas"
-            leftSection={<IconAlertTriangle size={16} />}
+            leftSection={!isMobile && <IconAlertTriangle size={16} />}
             rightSection={
               alertCount > 0 ? (
                 <Badge size="xs" color="orange" circle>
@@ -298,7 +298,7 @@ export function VehicleDetailPage() {
           >
             Alertas
           </Tabs.Tab>
-          <Tabs.Tab value="info" leftSection={<IconInfoCircle size={16} />}>
+          <Tabs.Tab value="info" leftSection={!isMobile && <IconInfoCircle size={16} />}>
             Info
           </Tabs.Tab>
         </Tabs.List>
