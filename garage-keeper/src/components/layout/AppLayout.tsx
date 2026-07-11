@@ -10,6 +10,7 @@ import {
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { SHELL_TRANSITION } from '../../app/theme';
 import { BrandMark } from './BrandMark';
+import { ColorSchemeToggle } from './ColorSchemeToggle';
 import { ErrorBoundary } from './ErrorBoundary';
 
 const navItems = [
@@ -78,13 +79,15 @@ export function AppLayout() {
             <Burger opened={opened} onClick={toggle} aria-label="Abrir menú" size="sm" />
             <BrandMark compact />
           </Group>
+          <ColorSchemeToggle />
         </Group>
       </AppShell.Header>
 
       <AppShell.Navbar p="md" withBorder>
-        <Box visibleFrom="sm">
+        <Group justify="space-between" align="flex-start" visibleFrom="sm" wrap="nowrap">
           <BrandMark />
-        </Box>
+          <ColorSchemeToggle />
+        </Group>
         <Divider mb="md" visibleFrom="sm" />
         <Text size="xs" c="dimmed" tt="uppercase" fw={700} mb="xs" px={4}>
           Navegación
@@ -111,7 +114,7 @@ export function AppLayout() {
         style={{
           overflowX: 'hidden',
           maxWidth: '100%',
-          background: 'var(--gk-page-gradient)',
+          background: 'var(--gk-bg)',
         }}
       >
         <ErrorBoundary key={location.pathname}>

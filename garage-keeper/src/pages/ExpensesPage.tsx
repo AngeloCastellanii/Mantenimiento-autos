@@ -12,6 +12,8 @@ import {
   Text,
   ThemeIcon,
 } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@mantine/core';
 import {
   IconCarSuv,
   IconChartBar,
@@ -20,6 +22,8 @@ import {
 } from '@tabler/icons-react';
 import { PageHeader } from '../components/layout/PageHeader';
 import { SectionBlock } from '../components/layout/SectionBlock';
+import { EmptyState } from '../components/layout/EmptyState';
+import { MonthlyExpenseChart } from '../components/dashboard/MonthlyExpenseChart';
 import { useGarage } from '../context/GarageContext';
 import { useServiceTypes } from '../hooks/useServiceTypes';
 import { filterMaintenances, sumBy } from '../services/selectors';
@@ -28,6 +32,7 @@ import { formatCurrency } from '../lib/format';
 type GroupBy = 'total' | 'vehicle' | 'type';
 
 export function ExpensesPage() {
+  const navigate = useNavigate();
   const { state } = useGarage();
   const { options: typeOptions, getLabel, getColor } = useServiceTypes();
 
@@ -90,6 +95,28 @@ export function ExpensesPage() {
       color: 'blue',
     },
   ];
+
+  if (state.vehicles.length === 0) {
+    return (
+      <>
+        <PageHeader
+          title="Gastos"
+          subtitle="Filtra el gasto por vehículo, tipo de servicio o el total general."
+          crumbs={[{ label: 'Inicio', to: '/' }, { label: 'Gastos' }]}
+        />
+        <EmptyState
+          icon={IconWallet}
+          title="Aún no hay gastos"
+          description="Registra un vehículo y sus mantenimientos para ver el análisis de gastos."
+          action={
+            <Button onClick={() => navigate('/vehiculos')}>
+              Agregar vehículo
+            </Button>
+          }
+        />
+      </>
+    );
+  }
 
   return (
     <>
@@ -158,6 +185,13 @@ export function ExpensesPage() {
           </Card>
         ))}
       </SimpleGrid>
+
+      <SectionBlock
+        title="Evolución mensual"
+        description="Gasto registrado por mes según el filtro."
+      >
+        <MonthlyExpenseChart maintenances={filtered} />
+      </SectionBlock>
 
       <SectionBlock
         title="Desglose de gastos"

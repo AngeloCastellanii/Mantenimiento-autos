@@ -1,9 +1,13 @@
 // Página "Próximos mantenimientos" — lista completa (ESPECIFICACION §5.1, RF-04).
 // DASHBOARD — owner: Marcial.
-import { SegmentedControl, Stack } from '@mantine/core';
+import { Button, SegmentedControl, Stack } from '@mantine/core';
+import { IconAlertTriangle } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '../components/layout/PageHeader';
+import { EmptyState } from '../components/layout/EmptyState';
 import { UpcomingAlerts } from '../components/dashboard/UpcomingAlerts';
+import { useGarage } from '../context/GarageContext';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { useMaintenanceAlerts } from '../hooks/useMaintenanceAlerts';
 
@@ -22,6 +26,8 @@ const filterData = (alerts: ReturnType<typeof useMaintenanceAlerts>) => [
 ];
 
 export function UpcomingPage() {
+  const navigate = useNavigate();
+  const { state } = useGarage();
   const alerts = useMaintenanceAlerts();
   const isMobile = useIsMobile();
   const [filter, setFilter] = useState<Filter>('all');
@@ -31,6 +37,28 @@ export function UpcomingPage() {
       filter === 'all' ? alerts : alerts.filter((a) => a.severity === filter),
     [alerts, filter],
   );
+
+  if (state.vehicles.length === 0) {
+    return (
+      <>
+        <PageHeader
+          title="Próximos mantenimientos"
+          subtitle="Revisa qué servicios están vencidos o se acercan por km o tiempo."
+          crumbs={[{ label: 'Inicio', to: '/' }, { label: 'Próximos' }]}
+        />
+        <EmptyState
+          icon={IconAlertTriangle}
+          title="Sin alertas todavía"
+          description="Cuando agregues vehículos y servicios, aquí verás los mantenimientos próximos o vencidos."
+          action={
+            <Button onClick={() => navigate('/vehiculos')}>
+              Agregar vehículo
+            </Button>
+          }
+        />
+      </>
+    );
+  }
 
   return (
     <>

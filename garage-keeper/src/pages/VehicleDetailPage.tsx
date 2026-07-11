@@ -18,11 +18,13 @@ import {
   ThemeIcon,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { modals } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
 import {
   IconAlertTriangle,
   IconCarSuv,
   IconClipboardList,
+  IconDownload,
   IconInfoCircle,
   IconPencil,
   IconPlus,
@@ -31,8 +33,10 @@ import {
 import { useGarage } from '../context/GarageContext';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { useResponsiveModalProps } from '../hooks/useResponsiveModal';
+import { useServiceTypes } from '../hooks/useServiceTypes';
 import { useVehicleAlerts } from '../hooks/useMaintenanceAlerts';
 import { totalCostByVehicle } from '../services/selectors';
+import { exportMaintenancesCsv } from '../lib/csv';
 import { PageHeader } from '../components/layout/PageHeader';
 import { MaintenanceTable } from '../components/maintenance/MaintenanceTable';
 import { MaintenanceDetailModal } from '../components/maintenance/MaintenanceDetailModal';
@@ -81,14 +85,12 @@ export function VehicleDetailPage() {
   const [detail, setDetail] = useState<Maintenance | null>(null);
   const [detailOpened, { open: openDetail, close: closeDetail }] =
     useDisclosure(false);
-  const [pendingDelete, setPendingDelete] = useState<Maintenance | null>(null);
   const [editVehOpened, { open: openEditVeh, close: closeEditVeh }] =
-    useDisclosure(false);
-  const [delVehOpened, { open: openDelVeh, close: closeDelVeh }] =
     useDisclosure(false);
   const [saving, setSaving] = useState(false);
   const isMobile = useIsMobile();
   const modalProps = useResponsiveModalProps();
+  const { getLabel } = useServiceTypes();
 
   if (!vehicle) {
     return (
@@ -159,18 +161,43 @@ export function VehicleDetailPage() {
 
   function handleDeleteFromDetail(m: Maintenance) {
     closeDetail();
-    setPendingDelete(m);
+    modals.openConfirmModal({
+      title: 'Eliminar mantenimiento',
+      centered: !isMobile,
+      children: (
+        <Text size="sm">
+          ¿Seguro que deseas eliminar este servicio? Esta acción no se puede
+          deshacer.
+        </Text>
+      ),
+      labels: { confirm: 'Eliminar', cancel: 'Cancelar' },
+      confirmProps: { color: 'red' },
+      onConfirm: () => {
+        deleteMaintenance(m.id);
+        notifications.show({
+          title: 'Mantenimiento eliminado',
+          message: 'El servicio se quitó del historial.',
+          color: 'red',
+        });
+      },
+    });
   }
 
-  function confirmDeleteMaintenance() {
-    if (!pendingDelete) return;
-    deleteMaintenance(pendingDelete.id);
-    notifications.show({
-      title: 'Mantenimiento eliminado',
-      message: 'El servicio se quitó del historial.',
-      color: 'red',
+  function askDeleteVehicle() {
+    modals.openConfirmModal({
+      title: 'Eliminar vehículo',
+      centered: !isMobile,
+      children: (
+        <Text size="sm">
+          Se eliminarán <b>{vehicle!.alias}</b> y sus{' '}
+          <b>{maintenances.length}</b> mantenimientos asociados. Esta acción no
+          se puede deshacer.
+        </Text>
+      ),
+      labels: { confirm: 'Eliminar', cancel: 'Cancelar' },
+      confirmProps: { color: 'red' },
+      onConfirm: confirmDeleteVehicle,
     });
-    setPendingDelete(null);
   }
 
   // VehicleForm ya muestra su propia notificación al guardar.
@@ -223,7 +250,7 @@ export function VehicleDetailPage() {
               color="red"
               variant="light"
               leftSection={<IconTrash size={16} />}
-              onClick={openDelVeh}
+              onClick={askDeleteVehicle}
               fullWidth={isMobile}
             >
               Eliminar
@@ -264,17 +291,28 @@ export function VehicleDetailPage() {
         </Stack>
       </Card>
 
-      <Button
-        leftSection={<IconPlus size={16} />}
-        onClick={() => {
-          setEditing(null);
-          openForm();
-        }}
-        fullWidth={isMobile}
-        mb="md"
-      >
-        Registrar mantenimiento
-      </Button>
+      <Group mb="md" grow={isMobile} wrap="wrap">
+        <Button
+          leftSection={<IconPlus size={16} />}
+          onClick={() => {
+            setEditing(null);
+            openForm();
+          }}
+          fullWidth={isMobile}
+        >
+          Registrar mantenimiento
+        </Button>
+        <Button
+          variant="default"
+          leftSection={<IconDownload size={16} />}
+          onClick={() => exportMaintenancesCsv(vehicle, maintenances, getLabel)}
+          disabled={maintenances.length === 0}
+          fullWidth={isMobile}
+          maw={isMobile ? undefined : 220}
+        >
+          Exportar CSV
+        </Button>
+      </Group>
 
       {/* Tabs = Compound Components (patrón académico) */}
       <Tabs defaultValue="historial" keepMounted={false}>
@@ -381,29 +419,6 @@ export function VehicleDetailPage() {
         onDelete={handleDeleteFromDetail}
       />
 
-      {/* Modal: confirmar eliminar mantenimiento */}
-      <Modal
-        opened={pendingDelete !== null}
-        onClose={() => setPendingDelete(null)}
-        title="Eliminar mantenimiento"
-        {...modalProps}
-      >
-        <Stack>
-          <Text size="sm">
-            ¿Seguro que deseas eliminar este servicio? Esta acción no se puede
-            deshacer.
-          </Text>
-          <Group justify="flex-end">
-            <Button variant="default" onClick={() => setPendingDelete(null)}>
-              Cancelar
-            </Button>
-            <Button color="red" onClick={confirmDeleteMaintenance}>
-              Eliminar
-            </Button>
-          </Group>
-        </Stack>
-      </Modal>
-
       {/* Modal: editar vehículo (compartido con Angelo) */}
       <Modal
         opened={editVehOpened}
@@ -418,29 +433,6 @@ export function VehicleDetailPage() {
         />
       </Modal>
 
-      {/* Modal: confirmar eliminar vehículo (compartido con Angelo) */}
-      <Modal
-        opened={delVehOpened}
-        onClose={closeDelVeh}
-        title="Eliminar vehículo"
-        {...modalProps}
-      >
-        <Stack>
-          <Text size="sm">
-            Se eliminarán <b>{vehicle.alias}</b> y sus{' '}
-            <b>{maintenances.length}</b> mantenimientos asociados. Esta acción no
-            se puede deshacer.
-          </Text>
-          <Group justify="flex-end">
-            <Button variant="default" onClick={closeDelVeh}>
-              Cancelar
-            </Button>
-            <Button color="red" onClick={confirmDeleteVehicle}>
-              Eliminar
-            </Button>
-          </Group>
-        </Stack>
-      </Modal>
     </>
   );
 }

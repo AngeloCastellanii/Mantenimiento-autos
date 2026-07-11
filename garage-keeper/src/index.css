@@ -8,9 +8,15 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+/* Fondo cohesivo por modo (sin light-dur(): usamos el atributo de Mantine). */
 :root {
-  --gk-bg: #f4f7f4;
-  --gk-page-gradient: var(--gk-bg);
+  --gk-bg: #e8efe8;
+  --gk-banner: var(--mantine-color-forest-7);
+}
+
+html[data-mantine-color-scheme='dark'] {
+  --gk-bg: #171c25;
+  --gk-banner: var(--mantine-color-dark-5);
 }
 
 body {

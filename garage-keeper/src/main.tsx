@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { MantineProvider } from '@mantine/core';
 import { DatesProvider } from '@mantine/dates';
+import { ModalsProvider } from '@mantine/modals';
 import { Notifications } from '@mantine/notifications';
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
@@ -14,12 +15,14 @@ import './index.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <MantineProvider theme={theme}>
+    <MantineProvider theme={theme} defaultColorScheme="auto">
       <DatesProvider settings={{ locale: 'es' }}>
-        <Notifications position="top-right" />
-        <GarageProvider>
-          <App />
-        </GarageProvider>
+        <ModalsProvider>
+          <Notifications position="top-right" />
+          <GarageProvider>
+            <App />
+          </GarageProvider>
+        </ModalsProvider>
       </DatesProvider>
     </MantineProvider>
   </StrictMode>,

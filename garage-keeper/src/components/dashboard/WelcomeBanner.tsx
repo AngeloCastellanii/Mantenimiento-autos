@@ -23,7 +23,7 @@ export function WelcomeBanner({ onAddVehicle }: WelcomeBannerProps) {
       mb="xl"
       withBorder
       style={{
-        background: 'var(--mantine-color-forest-7)',
+        background: 'var(--gk-banner)',
         color: '#fff',
       }}
     >

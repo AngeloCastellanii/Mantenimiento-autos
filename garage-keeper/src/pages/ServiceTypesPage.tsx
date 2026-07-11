@@ -15,6 +15,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { modals } from '@mantine/modals';
 import { IconPencil, IconPlus, IconTrash } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { PageHeader } from '../components/layout/PageHeader';
@@ -115,10 +116,24 @@ export function ServiceTypesPage() {
   };
 
   const handleDelete = (t: ServiceType) => {
-    deleteServiceType(t.id);
-    notifications.show({
-      message: `"${t.label}" eliminado. Sus servicios pasaron a "Otro".`,
-      color: 'orange',
+    modals.openConfirmModal({
+      title: 'Eliminar tipo de servicio',
+      centered: !isMobile,
+      children: (
+        <Text size="sm">
+          Se eliminará <b>{t.label}</b>. Los servicios de este tipo pasarán a
+          "Otro".
+        </Text>
+      ),
+      labels: { confirm: 'Eliminar', cancel: 'Cancelar' },
+      confirmProps: { color: 'red' },
+      onConfirm: () => {
+        deleteServiceType(t.id);
+        notifications.show({
+          message: `"${t.label}" eliminado. Sus servicios pasaron a "Otro".`,
+          color: 'orange',
+        });
+      },
     });
   };
 

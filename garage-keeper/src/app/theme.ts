@@ -29,10 +29,24 @@ const ink: MantineColorsTuple = [
   '#524b3c',
 ];
 
+// Paleta oscura "slate" (azul-grisácea) — modo oscuro con más carácter que el gris plano.
+const dark: MantineColorsTuple = [
+  '#c7ccd6',
+  '#aeb4c1',
+  '#8b93a5',
+  '#6b7488',
+  '#4d5566',
+  '#3b4353',
+  '#2d3442',
+  '#242a36',
+  '#1c212b',
+  '#151922',
+];
+
 export const theme = createTheme({
   primaryColor: 'forest',
-  primaryShade: { light: 6, dark: 5 },
-  colors: { forest, ink },
+  primaryShade: { light: 6, dark: 4 },
+  colors: { forest, ink, dark },
   fontFamily: 'Inter, system-ui, sans-serif',
   defaultRadius: 'lg',
   headings: {
