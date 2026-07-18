@@ -1,5 +1,5 @@
 {
-  "name": "garage-keeper",
+  "name": "carro-servizio",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,6 +12,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@mantine/charts": "^9.4.1",
     "@mantine/core": "^9.4.1",
     "@mantine/dates": "^9.4.1",
     "@mantine/form": "^9.4.1",
@@ -20,9 +21,11 @@
     "@mantine/notifications": "^9.4.1",
     "@tabler/icons-react": "^3.44.0",
     "dayjs": "^1.11.21",
+    "idb-keyval": "^6.3.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "react-router-dom": "^7.18.1"
+    "react-router-dom": "^7.18.1",
+    "recharts": "^3.9.2"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",

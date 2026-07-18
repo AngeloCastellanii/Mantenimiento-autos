@@ -1,4 +1,4 @@
-import { AppShell, Box, Burger, Divider, Group, NavLink, Text } from '@mantine/core';
+import { AppShell, Box, Burger, Divider, Group, NavLink, Text, Center, Loader } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
   IconAlertTriangle,
@@ -12,6 +12,10 @@ import { SHELL_TRANSITION } from '../../app/theme';
 import { BrandMark } from './BrandMark';
 import { ColorSchemeToggle } from './ColorSchemeToggle';
 import { ErrorBoundary } from './ErrorBoundary';
+import { useGarage } from '../../context/GarageContext';
+import { useMaintenanceAlerts } from '../../hooks/useMaintenanceAlerts';
+import { requestNotificationPermission, notifyCriticalAlerts } from '../../services/notifications';
+import { useEffect } from 'react';
 
 const navItems = [
   {
@@ -50,6 +54,18 @@ export function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [opened, { toggle, close }] = useDisclosure();
+  const { isLoading } = useGarage();
+  const alerts = useMaintenanceAlerts();
+
+  useEffect(() => {
+    if (!isLoading && alerts.length > 0) {
+      requestNotificationPermission().then((granted) => {
+        if (granted) {
+          notifyCriticalAlerts(alerts);
+        }
+      });
+    }
+  }, [isLoading, alerts]);
 
   const goTo = (path: string) => {
     navigate(path);
@@ -117,9 +133,15 @@ export function AppLayout() {
           background: 'var(--gk-bg)',
         }}
       >
-        <ErrorBoundary key={location.pathname}>
-          <Outlet />
-        </ErrorBoundary>
+        {isLoading ? (
+          <Center h="100%" mih={300}>
+            <Loader color="forest" />
+          </Center>
+        ) : (
+          <ErrorBoundary key={location.pathname}>
+            <Outlet />
+          </ErrorBoundary>
+        )}
       </AppShell.Main>
     </AppShell>
   );

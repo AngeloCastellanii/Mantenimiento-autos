@@ -16,6 +16,7 @@ import {
   Tabs,
   Text,
   ThemeIcon,
+  Avatar,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { modals } from '@mantine/modals';
@@ -210,6 +211,7 @@ export function VehicleDetailPage() {
       year: Number(values.year),
       currentMileage: Number(values.currentMileage),
       plate: values.plate.trim() || undefined,
+      photoDataUrl: values.photoDataUrl,
     });
     closeEditVeh();
   }
@@ -263,9 +265,13 @@ export function VehicleDetailPage() {
       <Card withBorder padding="lg" radius="md" mb="lg">
         <Stack gap="md">
           <Group gap="sm" wrap="nowrap" align="flex-start">
-            <ThemeIcon variant="light" size={48} radius="md">
-              <IconCarSuv size={26} />
-            </ThemeIcon>
+            {vehicle.photoDataUrl ? (
+              <Avatar src={vehicle.photoDataUrl} size={64} radius="md" />
+            ) : (
+              <ThemeIcon variant="light" size={48} radius="md">
+                <IconCarSuv size={26} />
+              </ThemeIcon>
+            )}
             <div style={{ minWidth: 0, flex: 1 }}>
               <Group gap="xs" wrap="wrap">
                 <Text fw={600} size="lg">

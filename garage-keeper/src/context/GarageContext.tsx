@@ -4,9 +4,11 @@ import {
   useEffect,
   useMemo,
   useReducer,
+  useState,
   type ReactNode,
 } from 'react';
 import { loadState, saveState } from '../services/storage';
+import { seedData } from '../data/seed';
 import type { GarageState, Maintenance, ServiceType, Vehicle } from '../types';
 
 type Action =
@@ -103,6 +105,7 @@ function reducer(state: GarageState, action: Action): GarageState {
 
 interface GarageContextValue {
   state: GarageState;
+  isLoading: boolean;
   addVehicle: (vehicle: Vehicle) => void;
   updateVehicle: (vehicle: Vehicle) => void;
   deleteVehicle: (id: string) => void;
@@ -117,15 +120,32 @@ interface GarageContextValue {
 const GarageContext = createContext<GarageContextValue | null>(null);
 
 export function GarageProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, loadState());
+  const [state, dispatch] = useReducer(reducer, seedData); // Start with seed, load async
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Initial load
   useEffect(() => {
-    saveState(state);
-  }, [state]);
+    let mounted = true;
+    loadState().then((data) => {
+      if (mounted) {
+        dispatch({ type: 'LOAD', payload: data });
+        setIsLoading(false);
+      }
+    });
+    return () => { mounted = false; };
+  }, []);
+
+  // Save on state change
+  useEffect(() => {
+    if (!isLoading) {
+      saveState(state);
+    }
+  }, [state, isLoading]);
 
   const value = useMemo<GarageContextValue>(
     () => ({
       state,
+      isLoading,
       addVehicle: (vehicle) =>
         dispatch({ type: 'ADD_VEHICLE', payload: vehicle }),
       updateVehicle: (vehicle) =>
@@ -144,7 +164,7 @@ export function GarageProvider({ children }: { children: ReactNode }) {
       deleteServiceType: (id) =>
         dispatch({ type: 'DELETE_SERVICE_TYPE', payload: id }),
     }),
-    [state],
+    [state, isLoading],
   );
 
   return (

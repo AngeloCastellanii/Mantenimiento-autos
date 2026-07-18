@@ -1,6 +1,8 @@
-import { Button, Group, NumberInput, SimpleGrid, Stack, Text, TextInput } from '@mantine/core';
+import { useState } from 'react';
+import { Button, Group, NumberInput, SimpleGrid, Stack, Text, TextInput, FileInput, Image, Center } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
+import { IconPhotoUp } from '@tabler/icons-react';
 import type { Vehicle } from '../../types';
 
 export interface VehicleFormValues {
@@ -10,6 +12,7 @@ export interface VehicleFormValues {
   year: number | string;
   currentMileage: number | string;
   plate: string;
+  photoDataUrl?: string;
 }
 
 interface VehicleFormProps {
@@ -19,6 +22,8 @@ interface VehicleFormProps {
 }
 
 export function VehicleForm({ initial, onSubmit, onCancel }: VehicleFormProps) {
+  const [photoPreview, setPhotoPreview] = useState<string | null>(initial?.photoDataUrl || null);
+
   const form = useForm<VehicleFormValues>({
     initialValues: {
       alias: initial?.alias ?? '',
@@ -27,6 +32,7 @@ export function VehicleForm({ initial, onSubmit, onCancel }: VehicleFormProps) {
       year: initial?.year ?? new Date().getFullYear(),
       currentMileage: initial?.currentMileage ?? 0,
       plate: initial?.plate ?? '',
+      photoDataUrl: initial?.photoDataUrl ?? '',
     },
     validate: {
       alias: (v) => (v.trim().length < 2 ? 'Mínimo 2 caracteres' : null),
@@ -44,6 +50,21 @@ export function VehicleForm({ initial, onSubmit, onCancel }: VehicleFormProps) {
     },
   });
 
+  const handleFileChange = (file: File | null) => {
+    if (!file) {
+      setPhotoPreview(null);
+      form.setFieldValue('photoDataUrl', '');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result as string;
+      setPhotoPreview(base64);
+      form.setFieldValue('photoDataUrl', base64);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = form.onSubmit((values) => {
     onSubmit(values);
     notifications.show({
@@ -59,6 +80,22 @@ export function VehicleForm({ initial, onSubmit, onCancel }: VehicleFormProps) {
         <Text size="sm" c="dimmed">
           Un alias te ayuda a identificar el auto rápido (ej. &quot;Mi Corolla&quot;).
         </Text>
+        
+        {photoPreview && (
+          <Center>
+            <Image src={photoPreview} radius="md" h={120} w="auto" fit="cover" fallbackSrc="https://placehold.co/120x120?text=Auto" />
+          </Center>
+        )}
+        
+        <FileInput 
+          label="Foto del Vehículo" 
+          placeholder="Sube una imagen" 
+          accept="image/png,image/jpeg,image/webp" 
+          leftSection={<IconPhotoUp size={16} />}
+          onChange={handleFileChange}
+          clearable
+        />
+
         <TextInput label="Alias" placeholder="Mi Corolla" {...form.getInputProps('alias')} />
         <SimpleGrid cols={{ base: 1, xs: 2 }} spacing="sm">
           <TextInput label="Marca" {...form.getInputProps('brand')} />

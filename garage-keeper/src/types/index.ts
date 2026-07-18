@@ -24,6 +24,7 @@ export interface Vehicle {
   year: number;
   currentMileage: number;
   plate?: string;
+  photoDataUrl?: string; // Imagen en base64
   createdAt: string;
 }
 

@@ -20,6 +20,7 @@ import {
   IconTools,
   IconWallet,
 } from '@tabler/icons-react';
+import { PieChart } from '@mantine/charts';
 import { PageHeader } from '../components/layout/PageHeader';
 import { SectionBlock } from '../components/layout/SectionBlock';
 import { EmptyState } from '../components/layout/EmptyState';
@@ -191,6 +192,32 @@ export function ExpensesPage() {
         description="Gasto registrado por mes según el filtro."
       >
         <MonthlyExpenseChart maintenances={filtered} />
+      </SectionBlock>
+
+      <SectionBlock
+        title="Distribución visual"
+        description="Gráfico de distribución del gasto."
+      >
+        {filtered.length === 0 ? (
+          <Card padding="xl">
+            <Text c="dimmed" ta="center">
+              No hay servicios que coincidan con el filtro.
+            </Text>
+          </Card>
+        ) : (
+          <Group justify="center" p="xl">
+            <PieChart
+              data={rows.map((r) => ({
+                name: rowLabel(r.key),
+                value: r.total,
+                color: groupBy === 'type' ? getColor(r.key) : 'forest.6',
+              }))}
+              withTooltip
+              tooltipDataSource="segment"
+              size={200}
+            />
+          </Group>
+        )}
       </SectionBlock>
 
       <SectionBlock

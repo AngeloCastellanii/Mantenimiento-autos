@@ -28,7 +28,7 @@ pnpm test    # pruebas unitarias
 
 ## Deploy (Vercel)
 
-- Root directory: raíz del repo (usa `vercel.json`) **o** `garage-keeper`
+- Root directory: raíz del repo (usa `vercel.json`) **o** `carro-servizio`
 - Install: `pnpm install` · Build: `pnpm build` · Output: `dist`
 
 ## Funcionalidades
